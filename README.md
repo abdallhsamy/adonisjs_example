@@ -23,7 +23,7 @@ npm run docker-attach
 ```
 or
 ```bash
-docker exec -it api /bin/sh
+docker-compose exec -it api /bin/sh
 ```
 
 ### attach to redis
@@ -32,7 +32,7 @@ npm run docker-attach-redis
 ```
 or
 ```bash
-docker exec -it redis /bin/sh
+docker-compose exec -it redis /bin/sh
 ```
 
 
@@ -42,5 +42,5 @@ npm run docker-attach-postgres
 ```
 or
 ```bash
-docker exec -it postgres /bin/sh
+docker-compose exec -it postgres /bin/sh
 ```
