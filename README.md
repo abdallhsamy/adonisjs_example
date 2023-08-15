@@ -44,3 +44,19 @@ or
 ```bash
 docker-compose exec -it postgres /bin/sh
 ```
+
+### check migration status
+```bash
+docker-compose exec -it api node ace migration:status
+```
+
+### run migrations
+```bash
+docker-compose exec -it api node ace migration:run
+```
+
+### add new controller
+```bash
+docker-compose exec -it api node ace make:controller Article
+```
+

@@ -8,6 +8,11 @@ services:
 #      - postgres
       - redis
       - mysql
+    links:
+#      - postgres
+      - redis
+      - mysql
+      - mysql:mysql
     build:
       context: .
       target: dependencies
@@ -23,6 +28,8 @@ services:
       - ./:/home/node/app
       # Uncomment the below line if you're developing on macOS
       - /home/node/app/node_modules
+    networks:
+      - adonis
     command: dumb-init node ace serve --watch --node-args="--inspect=0.0.0.0"
 
 #  postgres:
@@ -60,8 +67,7 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
     volumes:
       - 'adonis-mysql:/var/lib/mysql'
-      - ./docker/mysql/data:/docker-entrypoint-initdb.d
-
+#      - ./docker/mysql/data:/docker-entrypoint-initdb.d
     networks:
       - adonis
     healthcheck:
@@ -82,6 +88,8 @@ services:
       MYSQL_USERNAME: "${MYSQL_USER:-user}"
       MYSQL_ROOT_PASSWORD: "${DATABASE_PASSWORD:-password}"
       PMA_HOST: mysql
+    volumes:
+      - ./docker/phpmyadmin/custom-apache-config.conf:/etc/apache2/conf-enabled/custom-apache-config.conf
     networks:
       - adonis
 
