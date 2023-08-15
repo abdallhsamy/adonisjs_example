@@ -5,8 +5,9 @@ services:
     container_name: '${APP_NAME:-adonis}_api'
     restart: always
     depends_on:
-      - postgres
+#      - postgres
       - redis
+      - mysql
     build:
       context: .
       target: dependencies
@@ -24,17 +25,17 @@ services:
       - /home/node/app/node_modules
     command: dumb-init node ace serve --watch --node-args="--inspect=0.0.0.0"
 
-  postgres:
-    container_name: '${APP_NAME:-adonis}_postgres'
-    image: postgres:15-alpine3.18
-    volumes:
-      - postgres_volume:/var/lib/postgresql/data
-      - ./docker/postgres-dev-init.sql:/docker-entrypoint-initdb.d/init.sql
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - 5432:5432
+#  postgres:
+#    container_name: '${APP_NAME:-adonis}_postgres'
+#    image: postgres:15-alpine3.18
+#    volumes:
+#      - postgres_volume:/var/lib/postgresql/data
+#      - ./docker/postgres-dev-init.sql:/docker-entrypoint-initdb.d/init.sql
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#    ports:
+#      - 5432:5432
 
   redis:
     container_name: '${APP_NAME:-adonis}_redis'
@@ -44,7 +45,53 @@ services:
     ports:
       - 6379:6379
 
+  mysql:
+    container_name: '${APP_NAME:-adonis}_mysql'
+    restart: always
+    image: 'mysql/mysql-server:8.0'
+    ports:
+      - '${MYSQL_PORT:-3306}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DATABASE_PASSWORD:-password}'
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: '${MYSQL_DB_NAME:-adonis_db}'
+      MYSQL_USER: '${MYSQL_USER:-user}'
+      MYSQL_PASSWORD: '${DATABASE_PASSWORD:-password}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+      - 'adonis-mysql:/var/lib/mysql'
+      - ./docker/mysql/data:/docker-entrypoint-initdb.d
+
+    networks:
+      - adonis
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-p${DATABASE_PASSWORD:-password}" ]
+      retries: 3
+      timeout: 5s
+
+  phpmyadmin:
+    platform: linux/x86_64
+    restart: always
+    container_name: '${APP_NAME:-adonis}_phpmyadmin'
+    image: phpmyadmin/phpmyadmin
+    links:
+      - mysql:mysql
+    ports:
+      - "${PHPMYADMIN_PORT:-8080}:80"
+    environment:
+      MYSQL_USERNAME: "${MYSQL_USER:-user}"
+      MYSQL_ROOT_PASSWORD: "${DATABASE_PASSWORD:-password}"
+      PMA_HOST: mysql
+    networks:
+      - adonis
+
+networks:
+  adonis:
+    driver: bridge
 
 volumes:
   postgres_volume:
   redis_volume:
+  adonis-mysql:
+  phpmyadmin:
+    driver: local

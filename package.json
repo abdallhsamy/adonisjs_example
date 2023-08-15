@@ -9,9 +9,10 @@
     "test": "node ace test",
     "lint": "eslint . --ext=.ts",
     "format": "prettier --write .",
-    "docker-attach": "docker exec -it api /bin/sh",
-    "docker-attach-redis": "docker exec -it redis /bin/sh",
-    "docker-attach-postgres": "docker exec -it postgres /bin/sh"
+    "docker-attach": "docker-compose exec -it api /bin/sh",
+    "docker-attach-redis": "docker-compose exec -it redis /bin/sh",
+    "docker-attach-postgres": "docker-compose exec -it postgres /bin/sh",
+    "docker-attach-mysql": "docker-compose exec -it mysql /bin/sh"
   },
   "eslintConfig": {
     "extends": [
@@ -59,7 +60,10 @@
   },
   "dependencies": {
     "@adonisjs/core": "^5.9.0",
+    "@adonisjs/lucid": "^18.4.0",
     "@adonisjs/repl": "^3.1.11",
+    "luxon": "^3.4.0",
+    "mysql2": "^3.6.0",
     "proxy-addr": "^2.0.7",
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.21"
