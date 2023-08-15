@@ -1,9 +1,12 @@
 version: '3.8'
 
 services:
-  adonis_app:
-    container_name: adonis_app
+  api:
+    container_name: '${APP_NAME:-adonis}_api'
     restart: always
+    depends_on:
+      - postgres
+      - redis
     build:
       context: .
       target: dependencies
@@ -12,8 +15,36 @@ services:
       - 9229:9229
     env_file:
       - .env
+    environment:
+      - PG_HOST=postgres
+      - REDIS_HOST=redis
     volumes:
       - ./:/home/node/app
       # Uncomment the below line if you're developing on macOS
       - /home/node/app/node_modules
     command: dumb-init node ace serve --watch --node-args="--inspect=0.0.0.0"
+
+  postgres:
+    container_name: '${APP_NAME:-adonis}_postgres'
+    image: postgres:15-alpine3.18
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+      - ./docker/postgres-dev-init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+
+  redis:
+    container_name: '${APP_NAME:-adonis}_redis'
+    image: redis:6-alpine3.18
+    volumes:
+      - redis_volume:/data
+    ports:
+      - 6379:6379
+
+
+volumes:
+  postgres_volume:
+  redis_volume:
