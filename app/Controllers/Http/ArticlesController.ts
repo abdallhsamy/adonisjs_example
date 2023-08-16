@@ -5,8 +5,13 @@ import CreateArticleValidator from 'App/Validators/CreateArticleValidator'
 import UpdateArticleValidator from 'App/Validators/UpdateArticleValidator'
 
 export default class ArticlesController {
-  public async index({ response }) {
-    const articles = await Article.all()
+  public async index({ request, response }) {
+    const page = request.input('page', 1)
+    const perPage = request.input('per_page', 10)
+    const articles = await Article.query()
+      .where('is_published', true)
+      .select('id', 'title')
+      .paginate(page, perPage)
 
     return response.ok(articles)
   }

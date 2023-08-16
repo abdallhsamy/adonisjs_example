@@ -60,3 +60,35 @@ docker-compose exec -it api node ace migration:run
 docker-compose exec -it api node ace make:controller Article
 ```
 
+
+## Examples
+pagination example :
+```json
+{
+  "meta": {
+    "total": 58,
+    "per_page": 3,
+    "current_page": 2,
+    "last_page": 20,
+    "first_page": 1,
+    "first_page_url": "/?page=1",
+    "last_page_url": "/?page=20",
+    "next_page_url": "/?page=3",
+    "previous_page_url": "/?page=1"
+  },
+  "data": [
+    {
+      "id": 5,
+      "title": "suscipit minus aspernatur saepe aspernatur iusto"
+    },
+    {
+      "id": 6,
+      "title": "recusandae quia accusantium consequatur magnam saepe"
+    },
+    {
+      "id": 7,
+      "title": "vitae exercitationem distinctio aliquid maxime natus"
+    }
+  ]
+}
+```
