@@ -1,24 +1,18 @@
-version: '3.8'
+version: '3.9'
 
 services:
   api:
     container_name: '${APP_NAME:-adonis}_api'
     restart: always
     depends_on:
-#      - postgres
       - redis
       - mysql
-    links:
-#      - postgres
-      - redis
-      - mysql
-      - mysql:mysql
     build:
       context: .
       target: dependencies
     ports:
-      - ${PORT}:${PORT}
-      - 9229:9229
+      - '${PORT}:${PORT}'
+      - '9229:9229'
     env_file:
       - .env
     environment:
@@ -31,18 +25,6 @@ services:
     networks:
       - adonis
     command: dumb-init node ace serve --watch --node-args="--inspect=0.0.0.0"
-
-#  postgres:
-#    container_name: '${APP_NAME:-adonis}_postgres'
-#    image: postgres:15-alpine3.18
-#    volumes:
-#      - postgres_volume:/var/lib/postgresql/data
-#      - ./docker/postgres-dev-init.sql:/docker-entrypoint-initdb.d/init.sql
-#    environment:
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: postgres
-#    ports:
-#      - 5432:5432
 
   redis:
     container_name: '${APP_NAME:-adonis}_redis'
@@ -64,14 +46,13 @@ services:
       MYSQL_DATABASE: '${MYSQL_DB_NAME:-adonis_db}'
       MYSQL_USER: '${MYSQL_USER:-user}'
       MYSQL_PASSWORD: '${DATABASE_PASSWORD:-password}'
-      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
     volumes:
       - 'adonis-mysql:/var/lib/mysql'
-#      - ./docker/mysql/data:/docker-entrypoint-initdb.d
     networks:
       - adonis
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-p${DATABASE_PASSWORD:-password}" ]
+      test: ["CMD", "mysqladmin", "ping", "-p${DATABASE_PASSWORD:-password}"]
       retries: 3
       timeout: 5s
 
@@ -81,15 +62,13 @@ services:
     container_name: '${APP_NAME:-adonis}_phpmyadmin'
     image: phpmyadmin/phpmyadmin
     links:
-      - mysql:mysql
+      - mysql:db
     ports:
       - "${PHPMYADMIN_PORT:-8080}:80"
     environment:
-      MYSQL_USERNAME: "${MYSQL_USER:-user}"
-      MYSQL_ROOT_PASSWORD: "${DATABASE_PASSWORD:-password}"
       PMA_HOST: mysql
     volumes:
-      - ./docker/phpmyadmin/custom-apache-config.conf:/etc/apache2/conf-enabled/custom-apache-config.conf
+      - ./docker/phpmyadmin/custom-apache-config.conf:/etc/phpmyadmin/apache2.conf
     networks:
       - adonis
 
@@ -98,8 +77,5 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_volume:
   redis_volume:
   adonis-mysql:
-  phpmyadmin:
-    driver: local

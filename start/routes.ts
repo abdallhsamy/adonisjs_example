@@ -25,3 +25,8 @@ Route.get('/', async () => {
 })
 
 Route.resource('articles', 'ArticlesController').apiOnly()
+
+Route.group(() => {
+  Route.post('register', 'AuthController.register')
+  Route.post('login', 'AuthController.login')
+}).prefix('auth')

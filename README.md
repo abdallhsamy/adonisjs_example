@@ -60,6 +60,10 @@ docker-compose exec -it api node ace migration:run
 docker-compose exec -it api node ace make:controller Article
 ```
 
+### create a new model
+```bash
+node ace make:model <ModelName> -m
+```
 
 ## Examples
 pagination example :

@@ -3,9 +3,11 @@
 import Article from 'App/Models/Article'
 import CreateArticleValidator from 'App/Validators/CreateArticleValidator'
 import UpdateArticleValidator from 'App/Validators/UpdateArticleValidator'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class ArticlesController {
-  public async index({ request, response }) {
+  public async index({ request, response }: HttpContextContract) {
+
     const page = request.input('page', 1)
     const perPage = request.input('per_page', 10)
     const articles = await Article.query()
@@ -16,7 +18,7 @@ export default class ArticlesController {
     return response.ok(articles)
   }
 
-  public async store({ request, response }) {
+  public async store({ request, response }: HttpContextContract) {
     const payload: any = await request.validate(CreateArticleValidator)
 
     const article = Article.create(payload)
@@ -24,10 +26,8 @@ export default class ArticlesController {
     return response.ok(article)
   }
 
-  public async show({ params, response }) {
-    const { id }: { id: Number } = params
-
-    const article: any = await Article.find(id)
+  public async show({ params, response }: HttpContextContract) {
+    const article: any = await Article.find(params.id)
     if (!article) {
       return response.notFound({ message: 'Article not found' })
     }
@@ -35,12 +35,10 @@ export default class ArticlesController {
     return response.ok(article)
   }
 
-  public async update({ request, params, response }) {
+  public async update({ request, params, response }: HttpContextContract) {
     const payload: any = await request.validate(UpdateArticleValidator)
 
-    const { id }: { id: Number } = params
-
-    const article: any = await Article.find(id)
+    const article: any = await Article.find(params.id)
     if (!article) {
       return response.notFound({ message: 'Article not found' })
     }
@@ -53,10 +51,8 @@ export default class ArticlesController {
     return response.ok(article)
   }
 
-  public async destroy({ params, response }) {
-    const { id }: { id: Number } = params
-
-    const article: any = await Article.find(id)
+  public async destroy({ params, response }: HttpContextContract) {
+    const article: any = await Article.find(params.id)
     if (!article) {
       return response.notFound({ message: 'Article not found' })
     }
