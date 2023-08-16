@@ -36,7 +36,7 @@ const databaseConfig: DatabaseConfig = {
     mysql: {
       client: 'mysql2',
       connection: {
-        host: Env.get('MYSQL_HOST'),
+        host: "192.168.48.3", // Env.get('MYSQL_HOST')
         port: Env.get('MYSQL_PORT'),
         user: Env.get('MYSQL_USER'),
         password: Env.get('MYSQL_PASSWORD', ''),

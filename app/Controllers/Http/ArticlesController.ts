@@ -1,7 +1,8 @@
 // import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import Article from 'App/Models/Article'
-import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import CreateArticleValidator from 'App/Validators/CreateArticleValidator'
+import UpdateArticleValidator from 'App/Validators/UpdateArticleValidator'
 
 export default class ArticlesController {
   public async index({ response }) {
@@ -11,12 +12,7 @@ export default class ArticlesController {
   }
 
   public async store({ request, response }) {
-    const articleSchema = schema.create({
-      title: schema.string({ trim: true }, [rules.maxLength(255)]),
-      content: schema.string({ trim: true }, [rules.maxLength(10000)]),
-    })
-
-    const payload: any = await request.validate({ schema: articleSchema })
+    const payload: any = await request.validate(CreateArticleValidator)
 
     const article = Article.create(payload)
 
@@ -35,12 +31,7 @@ export default class ArticlesController {
   }
 
   public async update({ request, params, response }) {
-    const articleSchema = schema.create({
-      title: schema.string({ trim: true }, [rules.maxLength(255)]),
-      content: schema.string({ escape: true }, [rules.maxLength(1000)]),
-    })
-
-    const payload: any = await request.validate({ schema: articleSchema })
+    const payload: any = await request.validate(UpdateArticleValidator)
 
     const { id }: { id: Number } = params
 
