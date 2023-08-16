@@ -4,12 +4,13 @@ import Article from 'App/Models/Article'
 import CreateArticleValidator from 'App/Validators/CreateArticleValidator'
 import UpdateArticleValidator from 'App/Validators/UpdateArticleValidator'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { bind } from '@adonisjs/route-model-binding'
 
 export default class ArticlesController {
   public async index({ request, response }: HttpContextContract) {
-
     const page = request.input('page', 1)
     const perPage = request.input('per_page', 10)
+
     const articles = await Article.query()
       .where('is_published', true)
       .select('id', 'title')
@@ -26,22 +27,14 @@ export default class ArticlesController {
     return response.ok(article)
   }
 
-  public async show({ params, response }: HttpContextContract) {
-    const article: any = await Article.find(params.id)
-    if (!article) {
-      return response.notFound({ message: 'Article not found' })
-    }
-
+  @bind()
+  public async show({ response }: HttpContextContract, article: Article) {
     return response.ok(article)
   }
 
-  public async update({ request, params, response }: HttpContextContract) {
+  @bind()
+  public async update({ request, response }: HttpContextContract, article: Article) {
     const payload: any = await request.validate(UpdateArticleValidator)
-
-    const article: any = await Article.find(params.id)
-    if (!article) {
-      return response.notFound({ message: 'Article not found' })
-    }
 
     article.title = payload.title
     article.content = payload.content
@@ -51,12 +44,8 @@ export default class ArticlesController {
     return response.ok(article)
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
-    const article: any = await Article.find(params.id)
-    if (!article) {
-      return response.notFound({ message: 'Article not found' })
-    }
-
+  @bind()
+  public async destroy({ response }: HttpContextContract, article: Article) {
     await article.delete()
 
     return response.ok({ message: 'Article deleted successfully.' })
