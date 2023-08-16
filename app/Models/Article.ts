@@ -12,7 +12,7 @@ export default class Article extends BaseModel {
   public content: string
 
   @column()
-  public status: string
+  public is_published: boolean
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
